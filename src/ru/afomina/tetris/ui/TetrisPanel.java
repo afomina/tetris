@@ -3,13 +3,11 @@ package ru.afomina.tetris.ui;
 import ru.afomina.tetris.figure.Figure;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.*;
 
 /**
  * Created by alexandra on 14.01.15.
@@ -27,18 +25,17 @@ public class TetrisPanel extends JPanel implements ActionListener {
     public static final int FIELD_X = (WINDOW_WIDTH - FIELD_WIDTH) / 2;
     public static final int FIELD_Y = 0;
 
-    private static final int SPEED = 1000;
+    private static final int SPEED = 500;
 
     private Figure figure = new Figure();
     private int figureX = FIELD_X + FIELD_WIDTH / 2 - figure.getWidth() / 2;
     private int figureY = 0;
 
-    private boolean[][] game = new boolean[GAME_WIDTH][GAME_HEIGHT];
+    private boolean[][] game = new boolean[GAME_HEIGHT][GAME_WIDTH];
 
     public TetrisPanel() {
         setFocusable(true);
         requestFocusInWindow();
-
 
         addKeyListener(new KeyListener() {
             @Override
@@ -47,14 +44,20 @@ public class TetrisPanel extends JPanel implements ActionListener {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    System.out.println("right");
-                    figure.right();
-                } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    System.out.println("left");
-                    figure.left();
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_RIGHT :
+                        figureX += ONE_CUBE_SIZE;
+                        if (figureX > FIELD_X + FIELD_WIDTH - figure.getWidth()) {
+                            figureX = FIELD_X + FIELD_WIDTH - figure.getWidth();
+                        }
+                        break;
+                    case  KeyEvent.VK_LEFT :
+                        figureX -= ONE_CUBE_SIZE;
+                        if (figureX < FIELD_X) {
+                            figureX = FIELD_X;
+                        }
+                        break;
                 }
-                figure.move();
                 reload();
             }
 
@@ -75,6 +78,14 @@ public class TetrisPanel extends JPanel implements ActionListener {
     }
 
     private void reload() {
+//        for (int y = 0; y < GAME_HEIGHT; y++) {
+//            for (int x = 0; x < GAME_WIDTH; x++) {
+//                if (game[y][x]) {
+//                    getGraphics().fillRect(FIELD_X + x * ONE_CUBE_SIZE, FIELD_Y + y * ONE_CUBE_SIZE, ONE_CUBE_SIZE, ONE_CUBE_SIZE);
+//                }
+//            }
+//        }
+
         validate();
         repaint();
     }
@@ -98,8 +109,11 @@ public class TetrisPanel extends JPanel implements ActionListener {
         if (figureY > FIELD_Y + FIELD_HEIGHT - ONE_CUBE_SIZE) {
             figureY = FIELD_Y + FIELD_HEIGHT - ONE_CUBE_SIZE;
 
-            //figure.paint(figureX, figureY, (Graphics2D) getGraphics());
-//            newFigure();
+            for (int x = (figureX - FIELD_X) / ONE_CUBE_SIZE; x < (figureX - FIELD_X + figure.getWidth()) / ONE_CUBE_SIZE; x++) {
+                game[(figureY - FIELD_Y) / ONE_CUBE_SIZE][x] = true;
+
+            }
+            newFigure();
         }
         reload();
     }
