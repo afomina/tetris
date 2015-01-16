@@ -28,12 +28,23 @@ public class TetrisPanel extends JPanel implements ActionListener {
     private static final int SPEED = 500;
 
     private Figure figure = new Figure();
-    private int figureX = FIELD_X + FIELD_WIDTH / 2 - figure.getWidth() / 2;
+    private int figureX = FIELD_X + FIELD_WIDTH / 2 - ONE_CUBE_SIZE;
     private int figureY = 0;
 
-    private boolean[][] game = new boolean[GAME_HEIGHT][GAME_WIDTH];
+    private boolean[][] game = new boolean[GAME_HEIGHT + 2][GAME_WIDTH + 2];
+
+    private Timer timer;
 
     public TetrisPanel() {
+        for (int i = 0; i < GAME_WIDTH + 2; i ++) {
+            game[0][i] = true;
+            game[GAME_HEIGHT + 1][i] = true;
+        }
+        for (int i = 0; i < GAME_HEIGHT; i++) {
+            game[i][0] = true;
+            game[i][GAME_WIDTH + 1] = true;
+        }
+
         setFocusable(true);
         requestFocusInWindow();
 
@@ -47,8 +58,8 @@ public class TetrisPanel extends JPanel implements ActionListener {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_RIGHT :
                         figureX += ONE_CUBE_SIZE;
-                        if (figureX > FIELD_X + FIELD_WIDTH - figure.getWidth()) {
-                            figureX = FIELD_X + FIELD_WIDTH - figure.getWidth();
+                        if (figureX > FIELD_X + FIELD_WIDTH) {// - figure.getWidth()) {
+                            figureX = FIELD_X + FIELD_WIDTH;// - figure.getWidth();
                         }
                         break;
                     case  KeyEvent.VK_LEFT :
@@ -65,7 +76,7 @@ public class TetrisPanel extends JPanel implements ActionListener {
             public void keyReleased(KeyEvent e) {
             }
         });
-        Timer timer = new Timer(SPEED, this);
+        timer = new Timer(SPEED, this);
         timer.start();
     }
 
@@ -75,14 +86,18 @@ public class TetrisPanel extends JPanel implements ActionListener {
         Graphics2D graphics2D = (Graphics2D) g;
         drawBorder(graphics2D);
         g.setColor(Color.MAGENTA);
-        for (int y = 0; y < GAME_HEIGHT; y++) {
-            for (int x = 0; x < GAME_WIDTH; x++) {
-                if (game[y][x]) {
-                    g.fillRect(FIELD_X + x * ONE_CUBE_SIZE, FIELD_Y + y * ONE_CUBE_SIZE, ONE_CUBE_SIZE, ONE_CUBE_SIZE);
+        if (!timer.isRunning()) {
+            g.drawString("GAME OVER", FIELD_X + FIELD_WIDTH / 5, FIELD_Y + FIELD_HEIGHT / 2);
+        } else {
+            for (int y = 1; y < GAME_HEIGHT; y++) {
+                for (int x = 1; x < GAME_WIDTH; x++) {
+                    if (game[y][x]) {
+                        g.fillRect(FIELD_X + x * ONE_CUBE_SIZE, FIELD_Y + y * ONE_CUBE_SIZE, ONE_CUBE_SIZE, ONE_CUBE_SIZE);
+                    }
                 }
             }
+            figure.paint(figureX, figureY, graphics2D);
         }
-        figure.paint(figureX, figureY, graphics2D);
     }
 
     private void reload() {
@@ -106,11 +121,15 @@ public class TetrisPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         figureY += ONE_CUBE_SIZE;
-        if (figureY > FIELD_Y + FIELD_HEIGHT - ONE_CUBE_SIZE) {
-            figureY = FIELD_Y + FIELD_HEIGHT - ONE_CUBE_SIZE;
+        if (checkCollision()) {
+            figureY -= ONE_CUBE_SIZE;
 
-            for (int x = (figureX - FIELD_X) / ONE_CUBE_SIZE; x < (figureX - FIELD_X + figure.getWidth()) / ONE_CUBE_SIZE; x++) {
-                game[(figureY - FIELD_Y) / ONE_CUBE_SIZE][x] = true;
+            for (int y = 0; y < 2; y++) {
+                for (int x = 0; x < 4; x++) {
+                    if (figure.getPosition()[y][x]) {
+                        game[(figureY - FIELD_Y) / ONE_CUBE_SIZE + y][(figureX - FIELD_X) / ONE_CUBE_SIZE + x] = true;
+                    }
+                }
             }
             newFigure();
         }
@@ -119,7 +138,26 @@ public class TetrisPanel extends JPanel implements ActionListener {
 
     private void newFigure() {
         figure = new Figure();
-        figureX = FIELD_X + FIELD_WIDTH / 2 - figure.getWidth() / 2;
+        figureX = FIELD_X + FIELD_WIDTH / 2 - ONE_CUBE_SIZE;
         figureY = 0;
+    }
+
+    private boolean checkCollision() {
+        for (int y = 0; y < 2; y++) {
+            for (int x = 0; x < 4; x++) {
+                int gameY = (figureY - FIELD_Y) / ONE_CUBE_SIZE + y;
+                if (figure.getPosition()[y][x] && game[gameY][(figureX - FIELD_X) / ONE_CUBE_SIZE + x]) {
+                    if (gameY == 1) {
+                        gameOver();
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void gameOver() {
+        timer.stop();
     }
 }
