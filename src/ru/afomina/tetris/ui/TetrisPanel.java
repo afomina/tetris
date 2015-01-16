@@ -74,18 +74,18 @@ public class TetrisPanel extends JPanel implements ActionListener {
         super.paintComponent(g);
         Graphics2D graphics2D = (Graphics2D) g;
         drawBorder(graphics2D);
+        g.setColor(Color.MAGENTA);
+        for (int y = 0; y < GAME_HEIGHT; y++) {
+            for (int x = 0; x < GAME_WIDTH; x++) {
+                if (game[y][x]) {
+                    g.fillRect(FIELD_X + x * ONE_CUBE_SIZE, FIELD_Y + y * ONE_CUBE_SIZE, ONE_CUBE_SIZE, ONE_CUBE_SIZE);
+                }
+            }
+        }
         figure.paint(figureX, figureY, graphics2D);
     }
 
     private void reload() {
-//        for (int y = 0; y < GAME_HEIGHT; y++) {
-//            for (int x = 0; x < GAME_WIDTH; x++) {
-//                if (game[y][x]) {
-//                    getGraphics().fillRect(FIELD_X + x * ONE_CUBE_SIZE, FIELD_Y + y * ONE_CUBE_SIZE, ONE_CUBE_SIZE, ONE_CUBE_SIZE);
-//                }
-//            }
-//        }
-
         validate();
         repaint();
     }
@@ -111,7 +111,6 @@ public class TetrisPanel extends JPanel implements ActionListener {
 
             for (int x = (figureX - FIELD_X) / ONE_CUBE_SIZE; x < (figureX - FIELD_X + figure.getWidth()) / ONE_CUBE_SIZE; x++) {
                 game[(figureY - FIELD_Y) / ONE_CUBE_SIZE][x] = true;
-
             }
             newFigure();
         }
@@ -122,6 +121,5 @@ public class TetrisPanel extends JPanel implements ActionListener {
         figure = new Figure();
         figureX = FIELD_X + FIELD_WIDTH / 2 - figure.getWidth() / 2;
         figureY = 0;
-        figure.paint(figureX, figureY, (Graphics2D) getGraphics());
     }
 }
