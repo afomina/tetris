@@ -68,6 +68,13 @@ public class TetrisPanel extends JPanel implements ActionListener {
                             figureX = FIELD_X;
                         }
                         break;
+//                    case KeyEvent.VK_UP :
+//                        figure.rotate();
+//                        break;
+//                    case KeyEvent.VK_DOWN :
+//                        figureY += ONE_CUBE_SIZE;
+//                        checkCollision();
+//                        break;
                 }
                 reload();
             }
@@ -149,6 +156,8 @@ public class TetrisPanel extends JPanel implements ActionListener {
                 if (figure.getPosition()[y][x] && game[gameY][(figureX - FIELD_X) / ONE_CUBE_SIZE + x]) {
                     if (gameY == 1) {
                         gameOver();
+                    } else if (figureY > FIELD_Y + FIELD_HEIGHT - ONE_CUBE_SIZE) {
+                        figureY = FIELD_Y + FIELD_HEIGHT - ONE_CUBE_SIZE;
                     }
                     return true;
                 }

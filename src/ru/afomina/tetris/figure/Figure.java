@@ -74,6 +74,10 @@ public class Figure {
         }
     }
 
+    public void rotate() {
+
+    }
+
     public boolean[][] getPosition() {
         return position;
     }
