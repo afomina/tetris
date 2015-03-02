@@ -94,4 +94,11 @@ public class Figure {
         return y;
     }
 
+    public int getWidth() {
+        int cnt = 0;
+        for (int i = 0; i < 4; i++) {
+            cnt += position[0][i] || position[1][i]? 1 : 0;
+        }
+        return cnt;
+    }
 }

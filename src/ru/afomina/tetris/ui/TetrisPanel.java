@@ -40,10 +40,10 @@ public class TetrisPanel extends JPanel implements ActionListener {
             game[0][i] = true;
             game[GAME_HEIGHT + 1][i] = true;
         }
-        for (int i = 0; i < GAME_HEIGHT; i++) {
-            game[i][0] = true;
-            game[i][GAME_WIDTH + 1] = true;
-        }
+//        for (int i = 0; i < GAME_HEIGHT; i++) {
+//            game[i][0] = true;
+//            game[i][GAME_WIDTH + 1] = true;
+//        }
 
         setFocusable(true);
         requestFocusInWindow();
@@ -57,15 +57,13 @@ public class TetrisPanel extends JPanel implements ActionListener {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_RIGHT :
-                        figureX += ONE_CUBE_SIZE;
-                        if (figureX > FIELD_X + FIELD_WIDTH) {// - figure.getWidth()) {
-                            figureX = FIELD_X + FIELD_WIDTH;// - figure.getWidth();
+                        if (figureX + ONE_CUBE_SIZE <= FIELD_X + FIELD_WIDTH - figure.getWidth() * ONE_CUBE_SIZE) {
+                            figureX += ONE_CUBE_SIZE;
                         }
                         break;
                     case  KeyEvent.VK_LEFT :
-                        figureX -= ONE_CUBE_SIZE;
-                        if (figureX < FIELD_X) {
-                            figureX = FIELD_X;
+                        if (figureX - ONE_CUBE_SIZE >= FIELD_X) {
+                            figureX -= ONE_CUBE_SIZE;
                         }
                         break;
 //                    case KeyEvent.VK_UP :
